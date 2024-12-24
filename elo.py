@@ -2,7 +2,7 @@ import sys
 import csv
 import math
 
-K = 100  # Adjust to your preference
+K = 35  # Adjust to your preference
 
 def expected_score(ratingA, ratingB):
     return 1.0 / (1.0 + 10 ** ((ratingB - ratingA) / 400.0))
