@@ -23,8 +23,8 @@ def build_colley_matrix(games, teams):
     team_index = {team: i for i, team in enumerate(teams)}
     
     # Keep track of wins, losses, and number of matchups
-    W = [0]*n
-    L = [0]*n
+    Wins = [0]*n
+    Losses = [0]*n
     matchups = np.zeros((n,n), dtype=int)
     
     for teamA, teamB, scoreA, scoreB in games:
@@ -34,27 +34,27 @@ def build_colley_matrix(games, teams):
         matchups[j, i] += 1
         
         if scoreA > scoreB:
-            W[i] += 1
-            L[j] += 1
+            Wins[i] += 1
+            Losses[j] += 1
         elif scoreB > scoreA:
-            W[j] += 1
-            L[i] += 1
+            Wins[j] += 1
+            Losses[i] += 1
     
     # Build Colley matrix C and vector b
-    C = np.zeros((n, n), dtype=float)
+    Colley = np.zeros((n, n), dtype=float)
     b = np.zeros(n, dtype=float)
     
     for i in range(n):
         # Diagonal entries: 2 + total games
-        C[i, i] = 2 + sum(matchups[i, :])
+        Colley[i, i] = 2 + sum(matchups[i, :])
         # Off-diagonal: -number of matchups
         for j in range(n):
             if i != j:
-                C[i, j] = -matchups[i, j]
+                Colley[i, j] = -matchups[i, j]
         # Right-hand side
-        b[i] = 1 + (W[i] - L[i]) / 2.0
+        b[i] = 1 + (Wins[i] - Losses[i]) / 2.0
     
-    return C, b, team_index
+    return Colley, b, team_index
 
 def main():
     if len(sys.argv) < 2:
@@ -64,10 +64,10 @@ def main():
     input_file = sys.argv[1]
     
     games, teams = read_games(input_file)
-    C, b, team_index = build_colley_matrix(games, teams)
+    Colley, b, team_index = build_colley_matrix(games, teams)
     
     # Solve the linear system
-    ratings = np.linalg.solve(C, b)
+    ratings = np.linalg.solve(Colley, b)
     
     # Pair each team with its rating
     team_ratings = [(team, ratings[idx]) for team, idx in team_index.items()]
