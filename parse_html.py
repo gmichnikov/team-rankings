@@ -2,6 +2,7 @@ import sys
 import csv
 from bs4 import BeautifulSoup
 
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: python parse_html.py input.html output.csv")
@@ -46,6 +47,7 @@ def main():
         writer.writerow(["teamA", "teamB", "scoreA", "scoreB"])
         for row in rows_out:
             writer.writerow(row)
+
 
 if __name__ == "__main__":
     main()

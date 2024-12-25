@@ -2,6 +2,7 @@ import sys
 import csv
 import numpy as np
 
+
 def read_games(filename):
     """
     Reads a CSV file with lines in the format:
@@ -9,7 +10,7 @@ def read_games(filename):
     """
     games = []
     teams_set = set()
-    with open(filename, 'r', encoding='utf-8') as f:
+    with open(filename, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         for row in reader:
             teamA, teamB, scoreA, scoreB = row
@@ -18,32 +19,33 @@ def read_games(filename):
             games.append((teamA, teamB, scoreA, scoreB))
     return games, list(teams_set)
 
+
 def build_colley_matrix(games, teams):
     n = len(teams)
     team_index = {team: i for i, team in enumerate(teams)}
-    
+
     # Keep track of wins, losses, and number of matchups
-    Wins = [0]*n
-    Losses = [0]*n
-    matchups = np.zeros((n,n), dtype=int)
-    
+    Wins = [0] * n
+    Losses = [0] * n
+    matchups = np.zeros((n, n), dtype=int)
+
     for teamA, teamB, scoreA, scoreB in games:
         i = team_index[teamA]
         j = team_index[teamB]
         matchups[i, j] += 1
         matchups[j, i] += 1
-        
+
         if scoreA > scoreB:
             Wins[i] += 1
             Losses[j] += 1
         elif scoreB > scoreA:
             Wins[j] += 1
             Losses[i] += 1
-    
+
     # Build Colley matrix C and vector b
     Colley = np.zeros((n, n), dtype=float)
     b = np.zeros(n, dtype=float)
-    
+
     for i in range(n):
         # Diagonal entries: 2 + total games
         Colley[i, i] = 2 + sum(matchups[i, :])
@@ -53,30 +55,32 @@ def build_colley_matrix(games, teams):
                 Colley[i, j] = -matchups[i, j]
         # Right-hand side
         b[i] = 1 + (Wins[i] - Losses[i]) / 2.0
-    
+
     return Colley, b, team_index
+
 
 def main():
     if len(sys.argv) < 2:
         print("Usage: python colley.py input.csv")
         sys.exit(1)
-    
+
     input_file = sys.argv[1]
-    
+
     games, teams = read_games(input_file)
     Colley, b, team_index = build_colley_matrix(games, teams)
-    
+
     # Solve the linear system
     ratings = np.linalg.solve(Colley, b)
-    
+
     # Pair each team with its rating
     team_ratings = [(team, ratings[idx]) for team, idx in team_index.items()]
     # Sort by rating descending
     team_ratings.sort(key=lambda x: x[1], reverse=True)
-    
+
     print("Colley Rankings:")
     for rank, (team, rating) in enumerate(team_ratings, start=1):
         print(f"{rank}. {team}: {rating:.3f}")
+
 
 if __name__ == "__main__":
     main()

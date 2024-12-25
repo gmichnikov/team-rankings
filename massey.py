@@ -2,6 +2,7 @@ import sys
 import csv
 import numpy as np
 
+
 def read_games(filename):
     """
     Reads a CSV file with lines:
@@ -9,7 +10,7 @@ def read_games(filename):
     """
     games = []
     teams_set = set()
-    with open(filename, 'r', encoding='utf-8') as f:
+    with open(filename, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
         # If there's a header, uncomment next line:
         # next(reader, None)
@@ -21,6 +22,7 @@ def read_games(filename):
             teams_set.update([teamA, teamB])
             games.append((teamA, teamB, scoreA, scoreB))
     return games, list(teams_set)
+
 
 def build_massey_matrix(games, teams):
     """
@@ -34,7 +36,7 @@ def build_massey_matrix(games, teams):
     p = np.zeros(n, dtype=float)
 
     # For each game, update M and p
-    for (teamA, teamB, scoreA, scoreB) in games:
+    for teamA, teamB, scoreA, scoreB in games:
         i = team_index[teamA]
         j = team_index[teamB]
         diff = scoreA - scoreB
@@ -52,10 +54,11 @@ def build_massey_matrix(games, teams):
     # Replace the last row with [1,1,1,...,1] and p[last] = 0
     # so the solution is unique.
     for col in range(n):
-        M[n-1, col] = 1
-    p[n-1] = 0
+        M[n - 1, col] = 1
+    p[n - 1] = 0
 
     return M, p, team_index
+
 
 def main():
     if len(sys.argv) < 2:
@@ -79,6 +82,7 @@ def main():
     print("Massey Ratings:")
     for rank, (team, rating) in enumerate(team_ratings, start=1):
         print(f"{rank}. {team}: {rating:.3f}")
+
 
 if __name__ == "__main__":
     main()

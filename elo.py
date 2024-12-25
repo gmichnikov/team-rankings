@@ -4,8 +4,10 @@ import math
 
 K = 35  # Adjust to your preference
 
+
 def expected_score(ratingA, ratingB):
     return 1.0 / (1.0 + 10 ** ((ratingB - ratingA) / 400.0))
+
 
 def main():
     if len(sys.argv) < 2:
@@ -59,6 +61,7 @@ def main():
     print("Final Elo Ratings:")
     for rank, (team, rating) in enumerate(sorted_ratings, start=1):
         print(f"{rank}. {team}: {rating:.1f}")
+
 
 if __name__ == "__main__":
     main()
