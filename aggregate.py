@@ -3,7 +3,7 @@ import re
 
 def parse_ranking(file_path):
     rankings = {}
-    pattern = re.compile(r"^(\d+)\.\s+([^:]+):?\s*[\d\.]*$")
+    pattern = re.compile(r"^(\d+)\.\s+([^:]+):?\s*-?[\d\.]*$")
     with open(file_path, "r") as f:
         for line in f:
             line = line.strip()
